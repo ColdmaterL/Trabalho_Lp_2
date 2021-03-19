@@ -6,10 +6,10 @@
 
 typedef struct lista{
     char nome[7];  // id
-    int ini;  // endereço onde começa
-    int fim;  // endereço onde termina
-    int freeant;  // espaço disponivel antes
-    int freedps;  // espaço disponivel depois
+    int ini;  // endereÃ§o onde comeÃ§a
+    int fim;  // endereÃ§o onde termina
+    int freeant;  // espaÃ§o disponivel antes
+    int freedps;  // espaÃ§o disponivel depois
     struct lista *prox;
 }lista;
 
@@ -78,7 +78,7 @@ lista *firstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
                 return l;
             }
             else
-                printf("Nao ha espaçoes disponiveis\n");
+                printf("Nao ha espaÃ§oes disponiveis\n");
         }
         else{
             aux1 = l;
@@ -142,7 +142,7 @@ lista *firstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
 }
 
 
-int encontraPior(int tam,  int *vet, int tamheap){  // se achar um espaço retorna a primeira posicao
+int encontraPior(int tam,  int *vet, int tamheap){  // se achar um espaÃ§o retorna a primeira posicao
     int i, pos = 0, posfin = 0, cont = 0, contm = 0;
     for(i = 0; i < tamheap; i++){
         if(vet[i] == true){
@@ -217,7 +217,6 @@ lista *worstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
                     aux->prox = aux2;
                 }
                 else{
-                    printf("foi2");
                     aux->freeant = 0;
                     aux->freedps = aux1->freedps - tam;
                     aux1->freedps = 0;
@@ -242,7 +241,7 @@ lista *deletar(lista *l, char *na_wa, int *vet){
     if(l == NULL){
         printf("Lista Vazia.\n");
     }
-    else if(strcmp(l->nome, na_wa) == 0){  // é o primeiro elemento
+    else if(strcmp(l->nome, na_wa) == 0){  // Ã© o primeiro elemento
         for(i = l->ini; i <= l->fim; i++)
             vet[i] = true;
         aux = l;
@@ -361,7 +360,7 @@ int main(){
             aux = strtok(NULL, " ");  // a
             switch(verificaExiste(list, aux)){
                 case 0:
-                    printf("O Elemento não existe na lista.\n");
+                    printf("O Elemento nÃ£o existe na lista.\n");
                     system("pause");
                 break;
                 case 1:
