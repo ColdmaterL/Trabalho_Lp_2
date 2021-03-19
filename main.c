@@ -34,84 +34,6 @@ int verificaExiste(lista *l, char *na_wa){
 }
 
 
-void espacosContiguos(lista *l){
-    lista *aux;
-    aux = l;
-    if(l != NULL){
-        while(aux != NULL){
-            if(aux->freeant > 0){
-                printf("%d...", aux->freeant);
-            }
-            if(aux->prox == NULL){
-                if(aux->freedps > 0)
-                    printf("...%d", aux->freedps);
-            }
-            printf("...");
-            aux = aux->prox;
-        }
-    }
-    else{
-        printf("Todos os espacos disponiveis.\n");
-    }
-    printf("\n");
-}
-
-
-/* //sem metodo de busca first fit
-lista *adiciona(lista *l, int *vet, int tam, int tamheap, char *na_wa){
-    int i;
-    lista *aux;
-    if(l == NULL){  // se a lista estiver vazia
-        l = (lista *) malloc(sizeof(lista));
-        strcpy(l->nome, na_wa);
-        l->ini = 0;
-        l->fim = tam - 1;
-        l->freeant = 0;
-        l->freedps = tamheap - tam;
-        l->prox = NULL;
-        for(i = 0; i < tam; i++)
-            vet[i] = false;
-    }
-    else if(l->freeant >= tam){  // se tiver espaço antes
-        aux = (lista *) malloc(sizeof(lista));
-        strcpy(aux->nome, na_wa);
-        aux->ini = l->ini - tam;
-        aux->fim = l->ini - 1;
-        aux->freeant = l->freeant - tam;
-        l->freeant = 0;
-        aux->freedps = 0;
-        aux->prox = l;
-        for(i = aux->ini; i <= tam; i++)
-            vet[i] = false;
-        return aux;
-    }
-    else if(l->freedps >= tam){  // se tiver espaço depois
-        aux = (lista *) malloc(sizeof(lista));
-        strcpy(aux->nome, na_wa);
-        aux->ini = l->fim + 1;
-        aux->fim = l->fim + tam;
-        aux->freeant = 0;
-        aux->freedps = l->freedps - tam;
-        l->freedps = 0;
-        aux->prox = l->prox;
-        l->prox = aux;
-        for(i = aux->ini; i <= aux->fim; i++)
-            vet[i] = false;
-        if(aux->prox != NULL){
-            aux = aux->prox;
-            aux->freeant = aux->freeant - tam;
-        }
-    }
-    else if(l->freedps < tam && l->prox == NULL){  // se nao tiver espaço
-        printf("Nao ha espacos disponiveis.\n");
-    }
-    else{  // nao achou espaço
-        l->prox = adiciona(l->prox, vet, tam, tamheap, na_wa);
-    }
-    return l;
-}
-*/
-
 lista *firstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
     int i;
     lista *aux1, *aux2, *aux3;
@@ -156,7 +78,7 @@ lista *firstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
                 return l;
             }
             else
-                printf("Nâo há espaçoes disponiveis\n");
+                printf("Nao ha espaçoes disponiveis\n");
         }
         else{
             aux1 = l;
@@ -220,6 +142,100 @@ lista *firstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
 }
 
 
+int encontraPior(int tam,  int *vet, int tamheap){  // se achar um espaço retorna a primeira posicao
+    int i, pos = 0, posfin = 0, cont = 0, contm = 0;
+    for(i = 0; i < tamheap; i++){
+        if(vet[i] == true){
+            cont++;
+        }
+        else{
+            cont = 0;
+            pos = i + 1;
+        }
+        if(cont > contm){
+            contm = cont;
+            posfin = pos;
+        }
+    }
+    if(contm >= tam)
+        return posfin;
+    else
+        return -1;
+}
+
+
+lista *worstFit(lista *l, int *vet, int tam, int tamheap, char *na_wa){
+    int veri, i;
+    lista *aux, *aux1, *aux2;
+    veri = encontraPior(tam, vet, tamheap);
+    if(veri != -1){
+        if(l == NULL){  // se a lista estiver vazia
+            l = (lista *) malloc(sizeof(lista));
+            strcpy(l->nome, na_wa);
+            l->ini = 0;
+            l->fim = tam - 1;
+            l->freeant = 0;
+            l->freedps = tamheap - tam;
+            l->prox = NULL;
+            for(i = 0; i < tam; i++)
+                vet[i] = false;
+        }
+        else{
+            aux = (lista *) malloc(sizeof(lista));
+            strcpy(aux->nome, na_wa);
+            aux->ini = veri;
+            aux->fim = veri + tam - 1;
+            if(l->ini > aux->ini){
+                aux->freeant = 0;
+                aux->freedps = l->freeant - tam;
+                aux->prox = l;
+                for(i = aux->ini; i < tam; i++)
+                    vet[i] = false;
+                return aux;
+            }
+            else{
+                aux1 = l;
+                aux2 = l->prox;
+                if(aux2 != NULL){
+                    if(aux2->prox == NULL){
+                        aux1 = aux1->prox;
+                        aux2 = NULL;
+                    }
+                    else{
+                        while(aux2->ini  < aux->ini){
+                            aux1 = aux1->prox;
+                            aux2 = aux2->prox;
+                        }
+                    }
+                }
+                if(aux2 != NULL){
+                    aux->freeant = 0;
+                    aux->freedps = aux1->freedps - tam;
+                    aux1->freedps = 0;
+                    aux2->freeant = aux->freedps;
+                    aux1->prox = aux;
+                    aux->prox = aux2;
+                }
+                else{
+                    printf("foi2");
+                    aux->freeant = 0;
+                    aux->freedps = aux1->freedps - tam;
+                    aux1->freedps = 0;
+                    aux1->prox = aux;
+                    aux->prox = NULL;
+                }
+                for(i = aux->ini; i <= aux->fim; i++)
+                    vet[i] = false;
+            }
+        }
+    }
+    else{
+        printf("Nao ha espacos disponiveis.\n");
+    }
+    return l;
+}
+
+
 lista *deletar(lista *l, char *na_wa, int *vet){
     lista *aux, *aux1;
     int i;
@@ -230,8 +246,14 @@ lista *deletar(lista *l, char *na_wa, int *vet){
         for(i = l->ini; i <= l->fim; i++)
             vet[i] = true;
         aux = l;
-        l = l->prox;
-        l->freeant = l->freeant + (aux->fim - aux->ini + 1 ) ;
+        if(l->prox != NULL){
+            l = l->prox;
+            l->freeant = l->freeant + (aux->fim - aux->ini + 1) ;
+        }
+        else{
+            free(aux);
+            return NULL;
+        }
         free(aux);
     }
     else{
@@ -255,6 +277,30 @@ lista *deletar(lista *l, char *na_wa, int *vet){
 }
 
 
+void espacos(lista *l){
+    lista *aux;
+    aux = l;
+    if(aux->freeant > 0)
+        printf("...");
+        printf("%d", aux->ini);
+    if(l != NULL){  // ver se a lista nao esta vazia
+        while(aux != NULL){
+            if(aux->freedps > 0){
+                printf("%d", aux->fim);
+                printf("...");
+            }
+            if(aux->prox == NULL && aux->freedps == 0){  // ultimo elemento
+                printf("%d%d", aux->ini, aux->fim);
+            }
+            aux = aux->prox;
+        }
+    }
+    else
+        printf("Todos os espacos dispoiniveis.");
+    printf("\n");
+}
+
+
 void liberaLista(lista *l){
     if(l != NULL){
         liberaLista(l->prox);
@@ -269,8 +315,7 @@ void liberatudo(lista *l, int *vet){
 }
 
 
-int main()
-{
+int main(){
     int *v, tamheap, tam, i;
     char command[20], name[7], *aux;
     lista *list = NULL, *auxlis;
@@ -290,6 +335,21 @@ int main()
                     aux = strtok(NULL, " ");  // 3
                     tam = atoi(aux);  // 3 vira int
                     list = firstFit(list, v, tam, tamheap, name);
+                break;
+                case 1:
+                    printf("ERRO: elemento ja existente na lista.\n");
+                    system("pause");
+                break;
+            }
+        }
+        if(strcmp(command, "worst") == 0){  // worst a 3
+            aux = strtok(NULL, " ");  // a
+            switch(verificaExiste(list, aux)){
+                case 0:  // nao existe
+                    strcpy(name, aux);  // name = a
+                    aux = strtok(NULL, " ");  // 3
+                    tam = atoi(aux);  // 3 vira int
+                    list = worstFit(list, v, tam, tamheap, name);
                 break;
                 case 1:
                     printf("ERRO: elemento ja existente na lista.\n");
@@ -331,7 +391,7 @@ int main()
             }
         }
         else if(strcmp(command,"space") == 0)  // limpa
-            espacosContiguos(list);
+            espacos(list);
         else if(strcmp(command,"clean") == 0)  // limpa
             system("cls");
     }
