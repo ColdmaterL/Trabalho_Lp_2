@@ -156,6 +156,8 @@ int encontraPior(int tam,  int *vet, int tamheap){  // se achar um espaço retor
             contm = cont;
             posfin = pos;
         }
+        if(contm == tam)
+            return posfin;
     }
     if(contm >= tam)
         return posfin;
