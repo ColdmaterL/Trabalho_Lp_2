@@ -1,2 +1,2 @@
 # Trabalho_2_Lp
-Segundo trabalho de lp
+Simulação de uma linguagem de programação.
